@@ -20,7 +20,7 @@ public class AttendanceFragment extends Fragment {
     private static final String PREFS_NAME = "AttendancePrefs";
     private static final String KEY_TOTAL_PREFIX = "total_";
     private static final String KEY_ATTENDED_PREFIX = "attended_";
-    private static final int MIN_ATTENDANCE_PERCENT = 75;
+    private static final int MIN_ATTENDANCE_PERCENT = 85;
 
     private String subject;
     private SharedPreferences prefs;

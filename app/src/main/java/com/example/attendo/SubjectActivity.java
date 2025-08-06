@@ -19,7 +19,7 @@ public class SubjectActivity extends AppCompatActivity {
 
     private String subject;
     private SharedPreferences prefs;
-    private TextView tvAttendancePercent, tvClassesInfo;
+    private TextView tvAttendancePercent, tvClassesInfo, tvAttendanceStats;
     private Button btnPresent, btnAbsent;
 
     public static Intent newIntent(Context context, String subject) {
@@ -44,6 +44,7 @@ public class SubjectActivity extends AppCompatActivity {
 
         tvAttendancePercent = findViewById(R.id.tvAttendancePercent);
         tvClassesInfo = findViewById(R.id.tvClassesInfo);
+        tvAttendanceStats = findViewById(R.id.tvAttendanceStats);
         btnPresent = findViewById(R.id.btnPresent);
         btnAbsent = findViewById(R.id.btnAbsent);
 
@@ -68,8 +69,11 @@ public class SubjectActivity extends AppCompatActivity {
         String attendedKey = KEY_ATTENDED_PREFIX + subject;
         int total = prefs.getInt(totalKey, 0);
         int attended = prefs.getInt(attendedKey, 0);
+        int missed = total - attended;
         double percent = total == 0 ? 0 : (attended * 100.0 / total);
+        
         tvAttendancePercent.setText(String.format(Locale.getDefault(), getString(R.string.attendance), percent));
+        tvAttendanceStats.setText(getString(R.string.attendance_stats, attended, missed, total));
         tvClassesInfo.setText(getClassesInfo(total, attended));
     }
 

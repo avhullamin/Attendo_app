@@ -11,4 +11,5 @@
     <string name="select_subject">Select Subject</string>
     <string name="mark_present">Mark Present</string>
     <string name="mark_absent">Mark Absent</string>
+    <string name="attendance_stats">Attended: %1$d | Missed: %2$d | Total: %3$d</string>
 </resources>

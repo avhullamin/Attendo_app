@@ -15,10 +15,12 @@ import android.content.Intent;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "AttendancePrefs";
     private static final String KEY_SUBJECTS = "subjects";
+    private static final int MAX_SUBJECTS = 10;
 
     private FloatingActionButton fabAddSubject;
     private LinearLayout subjectButtonContainer;
@@ -37,7 +39,13 @@ public class MainActivity extends AppCompatActivity {
         subjectList = new ArrayList<>(prefs.getStringSet(KEY_SUBJECTS, new HashSet<String>()));
         renderSubjectButtons();
 
-        fabAddSubject.setOnClickListener(v -> showAddSubjectDialog());
+        fabAddSubject.setOnClickListener(v -> {
+            if (subjectList.size() >= MAX_SUBJECTS) {
+                Toast.makeText(this, "You can only add up to 10 subjects.", Toast.LENGTH_SHORT).show();
+            } else {
+                showAddSubjectDialog();
+            }
+        });
     }
 
     private void renderSubjectButtons() {
@@ -63,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAddSubjectDialog() {
+        if (subjectList.size() >= MAX_SUBJECTS) return;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.add_subject);
 

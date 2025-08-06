@@ -9,4 +9,6 @@
     <string name="can_miss_classes">You can miss %1$d more class(es) and still meet minimum attendance.</string>
     <string name="need_attend_classes">You need to attend next %1$d class(es) to reach minimum attendance.</string>
     <string name="select_subject">Select Subject</string>
+    <string name="mark_present">Mark Present</string>
+    <string name="mark_absent">Mark Absent</string>
 </resources>

@@ -23,9 +23,16 @@
         android:layout_marginBottom="32dp"/>
 
     <Button
-        android:id="@+id/btnMarkAttendance"
+        android:id="@+id/btnPresent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/mark_attendance"/>
+        android:text="@string/mark_present"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnAbsent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mark_absent"/>
 
 </LinearLayout>

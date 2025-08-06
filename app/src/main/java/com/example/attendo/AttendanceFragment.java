@@ -25,7 +25,7 @@ public class AttendanceFragment extends Fragment {
     private String subject;
     private SharedPreferences prefs;
     private TextView tvAttendancePercent, tvClassesInfo;
-    private Button btnMarkAttendance;
+    private Button btnPresent, btnAbsent;
 
     public static AttendanceFragment newInstance(String subject) {
         AttendanceFragment fragment = new AttendanceFragment();
@@ -47,23 +47,26 @@ public class AttendanceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_attendance, container, false);
         tvAttendancePercent = view.findViewById(R.id.tvAttendancePercent);
         tvClassesInfo = view.findViewById(R.id.tvClassesInfo);
-        btnMarkAttendance = view.findViewById(R.id.btnMarkAttendance);
+        btnPresent = view.findViewById(R.id.btnPresent);
+        btnAbsent = view.findViewById(R.id.btnAbsent);
 
         if (getArguments() != null) {
             subject = getArguments().getString(ARG_SUBJECT);
         }
 
-        btnMarkAttendance.setOnClickListener(v -> markAttendance());
+        btnPresent.setOnClickListener(v -> markAttendance(true));
+        btnAbsent.setOnClickListener(v -> markAttendance(false));
 
         updateUI();
         return view;
     }
 
-    private void markAttendance() {
+    private void markAttendance(boolean isPresent) {
         String totalKey = KEY_TOTAL_PREFIX + subject;
         String attendedKey = KEY_ATTENDED_PREFIX + subject;
         int total = prefs.getInt(totalKey, 0) + 1;
-        int attended = prefs.getInt(attendedKey, 0) + 1;
+        int attended = prefs.getInt(attendedKey, 0);
+        if (isPresent) attended++;
         prefs.edit().putInt(totalKey, total).putInt(attendedKey, attended).apply();
         updateUI();
     }

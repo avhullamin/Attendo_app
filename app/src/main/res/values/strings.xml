@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Attendo</string>
+    <string name="attendance">Attendance: %1$.2f%%</string>
+    <string name="classes_info_default">Classes info will appear here.</string>
+    <string name="mark_attendance">Mark Attendance</string>
+    <string name="enter_subject_name">Enter subject name</string>
+    <string name="add_subject">Add Subject</string>
+    <string name="no_classes_marked">No classes marked yet.</string>
+    <string name="can_miss_classes">You can miss %1$d more class(es) and still meet minimum attendance.</string>
+    <string name="need_attend_classes">You need to attend next %1$d class(es) to reach minimum attendance.</string>
+    <string name="select_subject">Select Subject</string>
 </resources>

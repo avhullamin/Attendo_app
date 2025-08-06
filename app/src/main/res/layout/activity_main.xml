@@ -23,6 +23,25 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="32dp"/>
 
+    <EditText
+        android:id="@+id/etNewSubject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter subject name"/>
+
+    <Button
+        android:id="@+id/btnAddSubject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Subject"
+        android:layout_marginBottom="16dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerSubjects"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"/>
+
     <Button
         android:id="@+id/btnMarkAttendance"
         android:layout_width="match_parent"

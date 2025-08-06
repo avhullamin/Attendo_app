@@ -7,12 +7,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import android.content.Intent;
 
 public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "AttendancePrefs";
@@ -53,23 +52,12 @@ public class MainActivity extends AppCompatActivity {
         for (String subject : subjectList) {
             Button btn = new Button(this);
             btn.setText(subject);
-            btn.setOnClickListener(v -> showAttendanceFragment(subject));
+            btn.setOnClickListener(v -> {
+                Intent intent = SubjectActivity.newIntent(this, subject);
+                startActivity(intent);
+            });
             subjectButtonContainer.addView(btn);
         }
-        // Optionally, show the first subject by default
-        if (!subjectList.isEmpty()) {
-            showAttendanceFragment(subjectList.get(0));
-        } else {
-            // Remove fragment if no subjects
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new Fragment() {}).commit();
-        }
-    }
-
-    private void showAttendanceFragment(String subject) {
-        AttendanceFragment fragment = AttendanceFragment.newInstance(subject);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentContainer, fragment);
-        transaction.commit();
     }
 
     private void saveSubjects() {

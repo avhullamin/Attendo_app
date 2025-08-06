@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.util.Locale;
+
 public class AttendanceFragment extends Fragment {
     private static final String ARG_SUBJECT = "subject";
     private static final String PREFS_NAME = "AttendancePrefs";
@@ -51,12 +53,7 @@ public class AttendanceFragment extends Fragment {
             subject = getArguments().getString(ARG_SUBJECT);
         }
 
-        btnMarkAttendance.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                markAttendance();
-            }
-        });
+        btnMarkAttendance.setOnClickListener(v -> markAttendance());
 
         updateUI();
         return view;
@@ -77,7 +74,7 @@ public class AttendanceFragment extends Fragment {
         int total = prefs.getInt(totalKey, 0);
         int attended = prefs.getInt(attendedKey, 0);
         double percent = total == 0 ? 0 : (attended * 100.0 / total);
-        tvAttendancePercent.setText(getString(R.string.attendance, percent));
+        tvAttendancePercent.setText(String.format(Locale.getDefault(), getString(R.string.attendance), percent));
         tvClassesInfo.setText(getClassesInfo(total, attended));
     }
 
@@ -89,11 +86,10 @@ public class AttendanceFragment extends Fragment {
         if (attended >= minRequired) {
             int canMiss = 0;
             int tempTotal = total;
-            int tempAttended = attended;
             while (true) {
                 tempTotal++;
                 int minReq = (int) Math.ceil(MIN_ATTENDANCE_PERCENT / 100.0 * tempTotal);
-                if (tempAttended < minReq) break;
+                if (attended < minReq) break;
                 canMiss++;
             }
             return getString(R.string.can_miss_classes, canMiss);

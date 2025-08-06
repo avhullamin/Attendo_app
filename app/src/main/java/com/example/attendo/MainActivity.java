@@ -14,13 +14,13 @@ import java.util.Set;
 import android.content.Intent;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "AttendancePrefs";
     private static final String KEY_SUBJECTS = "subjects";
 
-    private EditText etNewSubject;
-    private Button btnAddSubject;
+    private FloatingActionButton fabAddSubject;
     private LinearLayout subjectButtonContainer;
     private SharedPreferences prefs;
     private ArrayList<String> subjectList;
@@ -30,23 +30,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        etNewSubject = findViewById(R.id.etNewSubject);
-        btnAddSubject = findViewById(R.id.btnAddSubject);
+        fabAddSubject = findViewById(R.id.fabAddSubject);
         subjectButtonContainer = findViewById(R.id.subjectButtonContainer);
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         subjectList = new ArrayList<>(prefs.getStringSet(KEY_SUBJECTS, new HashSet<String>()));
         renderSubjectButtons();
 
-        btnAddSubject.setOnClickListener(v -> {
-            String subject = etNewSubject.getText().toString().trim();
-            if (!TextUtils.isEmpty(subject) && !subjectList.contains(subject)) {
-                subjectList.add(subject);
-                saveSubjects();
-                renderSubjectButtons();
-                etNewSubject.setText("");
-            }
-        });
+        fabAddSubject.setOnClickListener(v -> showAddSubjectDialog());
     }
 
     private void renderSubjectButtons() {
@@ -69,6 +60,27 @@ public class MainActivity extends AppCompatActivity {
             
             subjectButtonContainer.addView(btn);
         }
+    }
+
+    private void showAddSubjectDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.add_subject);
+
+        final EditText input = new EditText(this);
+        input.setHint(R.string.enter_subject_name);
+        builder.setView(input);
+
+        builder.setPositiveButton(R.string.add_subject, (dialog, which) -> {
+            String subject = input.getText().toString().trim();
+            if (!TextUtils.isEmpty(subject) && !subjectList.contains(subject)) {
+                subjectList.add(subject);
+                saveSubjects();
+                renderSubjectButtons();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 
     private void showDeleteConfirmationDialog(String subject) {

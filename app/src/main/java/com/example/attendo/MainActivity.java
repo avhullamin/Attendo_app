@@ -5,10 +5,10 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,11 +20,9 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText etNewSubject;
     private Button btnAddSubject;
-    private TabLayout tabLayout;
-    private ViewPager2 viewPager;
+    private LinearLayout subjectButtonContainer;
     private SharedPreferences prefs;
     private ArrayList<String> subjectList;
-    private SubjectPagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,34 +31,45 @@ public class MainActivity extends AppCompatActivity {
 
         etNewSubject = findViewById(R.id.etNewSubject);
         btnAddSubject = findViewById(R.id.btnAddSubject);
-        tabLayout = findViewById(R.id.tabLayout);
-        viewPager = findViewById(R.id.viewPager);
+        subjectButtonContainer = findViewById(R.id.subjectButtonContainer);
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         subjectList = new ArrayList<>(prefs.getStringSet(KEY_SUBJECTS, new HashSet<String>()));
-        pagerAdapter = new SubjectPagerAdapter(this, subjectList);
-        viewPager.setAdapter(pagerAdapter);
+        renderSubjectButtons();
 
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            tab.setText(subjectList.get(position));
-        }).attach();
-
-        btnAddSubject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String subject = etNewSubject.getText().toString().trim();
-                if (!TextUtils.isEmpty(subject) && !subjectList.contains(subject)) {
-                    subjectList.add(subject);
-                    saveSubjects();
-                    pagerAdapter.notifyDataSetChanged();
-                    tabLayout.removeAllTabs();
-                    new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-                        tab.setText(subjectList.get(position));
-                    }).attach();
-                    etNewSubject.setText("");
-                }
+        btnAddSubject.setOnClickListener(v -> {
+            String subject = etNewSubject.getText().toString().trim();
+            if (!TextUtils.isEmpty(subject) && !subjectList.contains(subject)) {
+                subjectList.add(subject);
+                saveSubjects();
+                renderSubjectButtons();
+                etNewSubject.setText("");
             }
         });
+    }
+
+    private void renderSubjectButtons() {
+        subjectButtonContainer.removeAllViews();
+        for (String subject : subjectList) {
+            Button btn = new Button(this);
+            btn.setText(subject);
+            btn.setOnClickListener(v -> showAttendanceFragment(subject));
+            subjectButtonContainer.addView(btn);
+        }
+        // Optionally, show the first subject by default
+        if (!subjectList.isEmpty()) {
+            showAttendanceFragment(subjectList.get(0));
+        } else {
+            // Remove fragment if no subjects
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new Fragment() {}).commit();
+        }
+    }
+
+    private void showAttendanceFragment(String subject) {
+        AttendanceFragment fragment = AttendanceFragment.newInstance(subject);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentContainer, fragment);
+        transaction.commit();
     }
 
     private void saveSubjects() {

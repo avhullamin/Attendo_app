@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.remove("total_" + subject);
         editor.remove("attended_" + subject);
+        editor.remove("extra_" + subject);
         editor.apply();
     }
 

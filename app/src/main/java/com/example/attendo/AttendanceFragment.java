@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,12 +21,13 @@ public class AttendanceFragment extends Fragment {
     private static final String PREFS_NAME = "AttendancePrefs";
     private static final String KEY_TOTAL_PREFIX = "total_";
     private static final String KEY_ATTENDED_PREFIX = "attended_";
+    private static final String KEY_EXTRA_PREFIX = "extra_";
     private static final int MIN_ATTENDANCE_PERCENT = 85;
 
     private String subject;
     private SharedPreferences prefs;
-    private TextView tvAttendancePercent, tvClassesInfo;
-    private Button btnPresent, btnAbsent;
+    private TextView tvAttendancePercent, tvClassesInfo, tvExtraClasses;
+    private Button btnPresent, btnAbsent, btnExtraClass;
 
     public static AttendanceFragment newInstance(String subject) {
         AttendanceFragment fragment = new AttendanceFragment();
@@ -47,8 +49,10 @@ public class AttendanceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_attendance, container, false);
         tvAttendancePercent = view.findViewById(R.id.tvAttendancePercent);
         tvClassesInfo = view.findViewById(R.id.tvClassesInfo);
+        tvExtraClasses = view.findViewById(R.id.tvExtraClasses);
         btnPresent = view.findViewById(R.id.btnPresent);
         btnAbsent = view.findViewById(R.id.btnAbsent);
+        btnExtraClass = view.findViewById(R.id.btnExtraClass);
 
         if (getArguments() != null) {
             subject = getArguments().getString(ARG_SUBJECT);
@@ -56,6 +60,7 @@ public class AttendanceFragment extends Fragment {
 
         btnPresent.setOnClickListener(v -> markAttendance(true));
         btnAbsent.setOnClickListener(v -> markAttendance(false));
+        btnExtraClass.setOnClickListener(v -> markExtraClass());
 
         updateUI();
         return view;
@@ -71,13 +76,24 @@ public class AttendanceFragment extends Fragment {
         updateUI();
     }
 
+    private void markExtraClass() {
+        String extraKey = KEY_EXTRA_PREFIX + subject;
+        int extraClasses = prefs.getInt(extraKey, 0) + 1;
+        prefs.edit().putInt(extraKey, extraClasses).apply();
+        updateUI();
+        Toast.makeText(getContext(), getString(R.string.extra_class_marked), Toast.LENGTH_SHORT).show();
+    }
+
     private void updateUI() {
         String totalKey = KEY_TOTAL_PREFIX + subject;
         String attendedKey = KEY_ATTENDED_PREFIX + subject;
+        String extraKey = KEY_EXTRA_PREFIX + subject;
         int total = prefs.getInt(totalKey, 0);
         int attended = prefs.getInt(attendedKey, 0);
+        int extraClasses = prefs.getInt(extraKey, 0);
         double percent = total == 0 ? 0 : (attended * 100.0 / total);
         tvAttendancePercent.setText(String.format(Locale.getDefault(), getString(R.string.attendance), percent));
+        tvExtraClasses.setText(String.format(Locale.getDefault(), getString(R.string.extra_classes), extraClasses));
         tvClassesInfo.setText(getClassesInfo(total, attended));
     }
 

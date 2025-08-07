@@ -41,6 +41,22 @@
         android:id="@+id/btnAbsent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/mark_absent"/>
+        android:text="@string/mark_absent"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvExtraClasses"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/extra_classes"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnExtraClass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mark_extra_class"
+        android:backgroundTint="@android:color/holo_green_dark"/>
 
 </LinearLayout> 

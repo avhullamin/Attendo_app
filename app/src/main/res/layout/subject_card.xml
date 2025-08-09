@@ -50,7 +50,7 @@
             android:text="0.0%"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/purple_500"
             android:background="@drawable/percentage_background"
             android:padding="8dp"
             android:minWidth="60dp"

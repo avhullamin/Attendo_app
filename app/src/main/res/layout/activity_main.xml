@@ -13,7 +13,7 @@
         android:orientation="horizontal"
         android:padding="16dp"
         android:gravity="center_vertical"
-        android:background="@color/colorPrimary">
+        android:background="@color/purple_500">
 
         <!-- App Icon and Title -->
         <LinearLayout
@@ -121,7 +121,7 @@
         android:src="@android:drawable/ic_input_add"
         android:contentDescription="@string/add_subject"
         app:fabSize="normal"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/purple_500"
         app:tint="@android:color/white" />
 
 </LinearLayout>

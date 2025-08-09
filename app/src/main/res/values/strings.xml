@@ -25,4 +25,5 @@
     <string name="subject_list">List of subjects</string>
     <string name="add_notes">Add Notes</string>
     <string name="edit_subject">Edit Subject</string>
+    <string name="view_notes">View Notes</string>
 </resources>

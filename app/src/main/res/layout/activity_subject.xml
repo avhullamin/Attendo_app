@@ -59,6 +59,13 @@
         android:text="@string/view_history"
         android:layout_marginBottom="8dp"/>
 
+    <Button
+        android:id="@+id/btnViewNotes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/view_notes"
+        android:layout_marginBottom="8dp"/>
+
     <!-- Notes Button - Bottom Right -->
     <Button
         android:id="@+id/btnNotes"

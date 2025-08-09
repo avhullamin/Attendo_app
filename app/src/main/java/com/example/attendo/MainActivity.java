@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.view.LayoutInflater;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.SharedPreferences;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences prefs;
     private ArrayList<String> subjectList;
     private Button btnExportData;
+    private TextView tvStudentName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +42,11 @@ public class MainActivity extends AppCompatActivity {
         fabAddSubject = findViewById(R.id.fabAddSubject);
         subjectButtonContainer = findViewById(R.id.subjectButtonContainer);
         btnExportData = findViewById(R.id.btnExportData);
+        tvStudentName = findViewById(R.id.tvStudentName);
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         subjectList = new ArrayList<>(prefs.getStringSet(KEY_SUBJECTS, new HashSet<String>()));
-        renderSubjectButtons();
+        renderSubjectCards();
 
         fabAddSubject.setOnClickListener(v -> {
             if (subjectList.size() >= MAX_SUBJECTS) {
@@ -55,26 +59,41 @@ public class MainActivity extends AppCompatActivity {
         btnExportData.setOnClickListener(v -> exportAttendanceData());
     }
 
-    private void renderSubjectButtons() {
+    private void renderSubjectCards() {
         subjectButtonContainer.removeAllViews();
         for (String subject : subjectList) {
-            Button btn = new Button(this);
-            btn.setText(subject);
+            View cardView = LayoutInflater.from(this).inflate(R.layout.subject_card, subjectButtonContainer, false);
+            
+            TextView tvSubjectName = cardView.findViewById(R.id.tvSubjectName);
+            TextView tvAttendancePercent = cardView.findViewById(R.id.tvAttendancePercent);
+            TextView tvAttendanceInfo = cardView.findViewById(R.id.tvAttendanceInfo);
+            
+            tvSubjectName.setText(subject);
+            
+            // Get attendance data
+            String totalKey = "total_" + subject;
+            String attendedKey = "attended_" + subject;
+            int total = prefs.getInt(totalKey, 0);
+            int attended = prefs.getInt(attendedKey, 0);
+            double percent = total == 0 ? 0 : (attended * 100.0 / total);
+            
+            tvAttendancePercent.setText(String.format(Locale.getDefault(), "%.1f%%", percent));
+            tvAttendanceInfo.setText(getClassesInfo(total, attended));
 
             // Click to open subject page
-            btn.setOnClickListener(v -> {
+            cardView.setOnClickListener(v -> {
                 Intent intent = SubjectActivity.newIntent(this, subject);
                 startActivity(intent);
             });
 
             // Long press to delete subject
-            btn.setOnLongClickListener(v -> {
+            cardView.setOnLongClickListener(v -> {
                 showDeleteConfirmationDialog(subject);
                 return true;
             });
 
             // Click and hold to edit subject
-            btn.setOnTouchListener((v, event) -> {
+            cardView.setOnTouchListener((v, event) -> {
                 if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
                     v.setTag(System.currentTimeMillis());
                 } else if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
@@ -87,7 +106,37 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             });
 
-            subjectButtonContainer.addView(btn);
+            subjectButtonContainer.addView(cardView);
+        }
+    }
+
+    private String getClassesInfo(int total, int attended) {
+        if (total == 0) {
+            return "No classes marked yet";
+        }
+        int minRequired = (int) Math.ceil(85.0 / 100.0 * total);
+        if (attended >= minRequired) {
+            int canMiss = 0;
+            int tempTotal = total;
+            while (true) {
+                tempTotal++;
+                int minReq = (int) Math.ceil(85.0 / 100.0 * tempTotal);
+                if (attended < minReq) break;
+                canMiss++;
+            }
+            return "Can miss " + canMiss + " more classes";
+        } else {
+            int needAttend = 0;
+            int tempTotal = total;
+            int tempAttended = attended;
+            while (true) {
+                tempTotal++;
+                tempAttended++;
+                int minReq = (int) Math.ceil(85.0 / 100.0 * tempTotal);
+                if (tempAttended >= minReq) break;
+                needAttend++;
+            }
+            return "Need to attend " + (needAttend + 1) + " more classes";
         }
     }
 
@@ -105,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             if (!TextUtils.isEmpty(subject) && !subjectList.contains(subject)) {
                 subjectList.add(subject);
                 saveSubjects();
-                renderSubjectButtons();
+                renderSubjectCards();
             }
         });
         builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
@@ -127,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
     private void deleteSubject(String subject) {
         subjectList.remove(subject);
         saveSubjects();
-        renderSubjectButtons();
+        renderSubjectCards();
 
         // Clear attendance data for this subject
         SharedPreferences.Editor editor = prefs.edit();
@@ -177,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.putString("notes_" + newSubject, notes);
                 editor.apply();
                 
-                renderSubjectButtons();
+                renderSubjectCards();
                 Toast.makeText(this, "Subject updated!", Toast.LENGTH_SHORT).show();
             } else if (subjectList.contains(newSubject)) {
                 Toast.makeText(this, "Subject already exists!", Toast.LENGTH_SHORT).show();
@@ -224,6 +273,21 @@ public class MainActivity extends AppCompatActivity {
                 exportData.append("Recent History:\n");
                 int count = 0;
                 for (int i = entries.length - 1; i >= 0 && count < 5; i--) {
+                    if (!entries[i].isEmpty()) {
+                        exportData.append("  ").append(entries[i]).append("\n");
+                        count++;
+                    }
+                }
+            }
+            
+            // Add recent notes
+            String notesKey = "notes_" + subject;
+            String notes = prefs.getString(notesKey, "");
+            if (!notes.isEmpty()) {
+                String[] entries = notes.split("\\|");
+                exportData.append("Recent Notes:\n");
+                int count = 0;
+                for (int i = entries.length - 1; i >= 0 && count < 3; i--) {
                     if (!entries[i].isEmpty()) {
                         exportData.append("  ").append(entries[i]).append("\n");
                         count++;

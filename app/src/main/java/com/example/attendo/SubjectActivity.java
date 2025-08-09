@@ -29,7 +29,7 @@ public class SubjectActivity extends AppCompatActivity {
     private String subject;
     private SharedPreferences prefs;
     private TextView tvAttendancePercent, tvClassesInfo, tvAttendanceStats;
-    private Button btnPresent, btnAbsent, btnViewHistory, btnExtraClass, btnNotes;
+    private Button btnPresent, btnAbsent, btnViewHistory, btnViewNotes, btnExtraClass, btnNotes;
 
     public static Intent newIntent(Context context, String subject) {
         Intent intent = new Intent(context, SubjectActivity.class);
@@ -57,6 +57,7 @@ public class SubjectActivity extends AppCompatActivity {
         btnPresent = findViewById(R.id.btnPresent);
         btnAbsent = findViewById(R.id.btnAbsent);
         btnViewHistory = findViewById(R.id.btnViewHistory);
+        btnViewNotes = findViewById(R.id.btnViewNotes);
         btnExtraClass = findViewById(R.id.btnExtraClass);
         btnNotes = findViewById(R.id.btnNotes);
 
@@ -64,6 +65,7 @@ public class SubjectActivity extends AppCompatActivity {
         btnAbsent.setOnClickListener(v -> markAttendance(false, false));
         btnExtraClass.setOnClickListener(v -> markAttendance(true, true));
         btnViewHistory.setOnClickListener(v -> showAttendanceHistory());
+        btnViewNotes.setOnClickListener(v -> showNotesHistory());
         btnNotes.setOnClickListener(v -> showNotesDialog());
 
         updateUI();
@@ -206,6 +208,35 @@ public class SubjectActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
             .setTitle("Attendance History")
             .setMessage(historyText.toString())
+            .setPositiveButton("OK", null)
+            .show();
+    }
+
+    private void showNotesHistory() {
+        String notesKey = "notes_" + subject;
+        String notes = prefs.getString(notesKey, "");
+        
+        if (notes.isEmpty()) {
+            new AlertDialog.Builder(this)
+                .setTitle("Notes History")
+                .setMessage("No notes found for this subject.")
+                .setPositiveButton("OK", null)
+                .show();
+            return;
+        }
+        
+        String[] entries = notes.split("\\|");
+        StringBuilder notesText = new StringBuilder();
+        
+        for (int i = entries.length - 1; i >= 0; i--) { // Show most recent first
+            if (!entries[i].isEmpty()) {
+                notesText.append(entries[i]).append("\n\n");
+            }
+        }
+        
+        new AlertDialog.Builder(this)
+            .setTitle("Notes History")
+            .setMessage(notesText.toString())
             .setPositiveButton("OK", null)
             .show();
     }

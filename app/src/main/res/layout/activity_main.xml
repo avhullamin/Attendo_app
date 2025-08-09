@@ -49,6 +49,15 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_menu_myplaces"
+                android:contentDescription="@string/profile_icon"
+                android:background="@drawable/circle_background"
+                android:padding="4dp"
+                android:layout_marginEnd="8dp"/>
+
             <Button
                 android:id="@+id/btnExportData"
                 android:layout_width="wrap_content"
@@ -57,16 +66,7 @@
                 android:textSize="12sp"
                 android:background="@drawable/button_background"
                 android:textColor="@android:color/black"
-                android:padding="8dp"
-                android:layout_marginEnd="8dp"/>
-
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@android:drawable/ic_menu_myplaces"
-                android:contentDescription="@string/profile_icon"
-                android:background="@drawable/circle_background"
-                android:padding="4dp"/>
+                android:padding="8dp"/>
         </LinearLayout>
     </LinearLayout>
 

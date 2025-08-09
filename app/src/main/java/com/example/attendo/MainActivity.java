@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         subjectList = new ArrayList<>(prefs.getStringSet(KEY_SUBJECTS, new HashSet<String>()));
-        renderSubjectCards();
         
         // Set student name (you can customize this)
         String studentName = prefs.getString("student_name", getString(R.string.student_name));
@@ -61,6 +60,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnExportData.setOnClickListener(v -> exportAttendanceData());
+        
+        // Render subject cards after setting up everything
+        renderSubjectCards();
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh the UI when returning from other activities
+        renderSubjectCards();
     }
 
     private void renderSubjectCards() {
@@ -80,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
             int total = prefs.getInt(totalKey, 0);
             int attended = prefs.getInt(attendedKey, 0);
             double percent = total == 0 ? 0 : (attended * 100.0 / total);
+            
+            // Debug: Log the values
+            System.out.println("Subject: " + subject + ", Total: " + total + ", Attended: " + attended + ", Percent: " + percent);
             
             tvAttendancePercent.setText(String.format(Locale.getDefault(), "%.1f%%", percent));
             tvAttendanceInfo.setText(getClassesInfo(total, attended));

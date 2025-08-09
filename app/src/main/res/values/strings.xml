@@ -23,4 +23,6 @@
     <string name="no_records_found">No attendance records found.</string>
     <string name="extra_class">Extra Class</string>
     <string name="subject_list">List of subjects</string>
+    <string name="add_notes">Add Notes</string>
+    <string name="edit_subject">Edit Subject</string>
 </resources>

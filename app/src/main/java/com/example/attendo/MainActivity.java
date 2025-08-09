@@ -73,6 +73,20 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             });
 
+            // Click and hold to edit subject
+            btn.setOnTouchListener((v, event) -> {
+                if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
+                    v.setTag(System.currentTimeMillis());
+                } else if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+                    long pressTime = (Long) v.getTag();
+                    if (System.currentTimeMillis() - pressTime > 500) {
+                        showEditSubjectDialog(subject);
+                        return true;
+                    }
+                }
+                return false;
+            });
+
             subjectButtonContainer.addView(btn);
         }
     }
@@ -119,7 +133,59 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.remove("total_" + subject);
         editor.remove("attended_" + subject);
+        editor.remove("history_" + subject);
+        editor.remove("notes_" + subject);
         editor.apply();
+    }
+
+    private void showEditSubjectDialog(String oldSubject) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.edit_subject);
+
+        final EditText input = new EditText(this);
+        input.setText(oldSubject);
+        input.setHint(R.string.enter_subject_name);
+        builder.setView(input);
+
+        builder.setPositiveButton("Update", (dialog, which) -> {
+            String newSubject = input.getText().toString().trim();
+            if (!TextUtils.isEmpty(newSubject) && !subjectList.contains(newSubject)) {
+                int index = subjectList.indexOf(oldSubject);
+                subjectList.set(index, newSubject);
+                saveSubjects();
+                
+                // Update SharedPreferences keys
+                SharedPreferences.Editor editor = prefs.edit();
+                String totalKey = "total_" + oldSubject;
+                String attendedKey = "attended_" + oldSubject;
+                String historyKey = "history_" + oldSubject;
+                String notesKey = "notes_" + oldSubject;
+                
+                int total = prefs.getInt(totalKey, 0);
+                int attended = prefs.getInt(attendedKey, 0);
+                String history = prefs.getString(historyKey, "");
+                String notes = prefs.getString(notesKey, "");
+                
+                editor.remove(totalKey);
+                editor.remove(attendedKey);
+                editor.remove(historyKey);
+                editor.remove(notesKey);
+                
+                editor.putInt("total_" + newSubject, total);
+                editor.putInt("attended_" + newSubject, attended);
+                editor.putString("history_" + newSubject, history);
+                editor.putString("notes_" + newSubject, notes);
+                editor.apply();
+                
+                renderSubjectButtons();
+                Toast.makeText(this, "Subject updated!", Toast.LENGTH_SHORT).show();
+            } else if (subjectList.contains(newSubject)) {
+                Toast.makeText(this, "Subject already exists!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 
     private void saveSubjects() {

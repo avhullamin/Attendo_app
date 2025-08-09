@@ -59,4 +59,15 @@
         android:text="@string/view_history"
         android:layout_marginBottom="8dp"/>
 
+    <!-- Notes Button - Bottom Right -->
+    <Button
+        android:id="@+id/btnNotes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="16dp"
+        android:text="@string/add_notes"
+        android:background="@drawable/glass_background"
+        android:textColor="@android:color/white"/>
+
 </LinearLayout>

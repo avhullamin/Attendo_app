@@ -49,6 +49,8 @@
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
         android:text="@string/export_data"
-        android:textSize="12sp"/>
+        android:textSize="12sp"
+        android:background="@drawable/glass_background"
+        android:textColor="@android:color/white"/>
 
 </RelativeLayout>

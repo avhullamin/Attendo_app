@@ -16,6 +16,7 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.widget.EditText;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 public class SubjectActivity extends AppCompatActivity {
     private static final String EXTRA_SUBJECT = "subject";
@@ -28,7 +29,7 @@ public class SubjectActivity extends AppCompatActivity {
     private String subject;
     private SharedPreferences prefs;
     private TextView tvAttendancePercent, tvClassesInfo, tvAttendanceStats;
-    private Button btnPresent, btnAbsent, btnViewHistory;
+    private Button btnPresent, btnAbsent, btnViewHistory, btnExtraClass, btnNotes;
 
     public static Intent newIntent(Context context, String subject) {
         Intent intent = new Intent(context, SubjectActivity.class);
@@ -56,39 +57,83 @@ public class SubjectActivity extends AppCompatActivity {
         btnPresent = findViewById(R.id.btnPresent);
         btnAbsent = findViewById(R.id.btnAbsent);
         btnViewHistory = findViewById(R.id.btnViewHistory);
+        btnExtraClass = findViewById(R.id.btnExtraClass);
+        btnNotes = findViewById(R.id.btnNotes);
 
-        btnPresent.setOnClickListener(v -> markAttendance(true));
-        btnAbsent.setOnClickListener(v -> markAttendance(false));
+        btnPresent.setOnClickListener(v -> markAttendance(true, false));
+        btnAbsent.setOnClickListener(v -> markAttendance(false, false));
+        btnExtraClass.setOnClickListener(v -> markAttendance(true, true));
         btnViewHistory.setOnClickListener(v -> showAttendanceHistory());
+        btnNotes.setOnClickListener(v -> showNotesDialog());
 
         updateUI();
     }
 
-    private void markAttendance(boolean isPresent) {
-        showNotesDialog(isPresent);
+    private void markAttendance(boolean isPresent, boolean isExtraClass) {
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String dailyKey = "daily_" + subject + "_" + today;
+        String extraDailyKey = "extra_daily_" + subject + "_" + today;
+        
+        if (isExtraClass) {
+            int extraCount = prefs.getInt(extraDailyKey, 0);
+            if (extraCount >= 2) {
+                Toast.makeText(this, "You can only mark 2 extra classes per day.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            showExtraClassDialog(isPresent);
+        } else {
+            int regularCount = prefs.getInt(dailyKey, 0);
+            if (regularCount >= 1) {
+                Toast.makeText(this, "You can only mark attendance once per day for regular classes.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            saveAttendanceWithNotes(isPresent, "", false);
+        }
     }
 
-    private void showNotesDialog(boolean isPresent) {
+    private void showExtraClassDialog(boolean isPresent) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Add Notes (Optional)");
+        builder.setTitle("Extra Class - Add Notes (Optional)");
 
         final EditText input = new EditText(this);
-        input.setHint("Enter any notes about this class...");
+        input.setHint("Enter any notes about this extra class...");
         builder.setView(input);
 
-        builder.setPositiveButton("Mark " + (isPresent ? "Present" : "Absent"), (dialog, which) -> {
+        builder.setPositiveButton("Mark Present", (dialog, which) -> {
             String notes = input.getText().toString().trim();
-            saveAttendanceWithNotes(isPresent, notes);
+            saveAttendanceWithNotes(isPresent, notes, true);
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
     }
 
-    private void saveAttendanceWithNotes(boolean isPresent, String notes) {
+    private void showNotesDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Notes");
+
+        final EditText input = new EditText(this);
+        input.setHint("Enter your notes...");
+        builder.setView(input);
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String notes = input.getText().toString().trim();
+            if (!notes.isEmpty()) {
+                saveNotes(notes);
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    private void saveAttendanceWithNotes(boolean isPresent, String notes, boolean isExtraClass) {
         String totalKey = KEY_TOTAL_PREFIX + subject;
         String attendedKey = KEY_ATTENDED_PREFIX + subject;
         String historyKey = KEY_ATTENDANCE_HISTORY_PREFIX + subject;
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String dailyKey = "daily_" + subject + "_" + today;
+        String extraDailyKey = "extra_daily_" + subject + "_" + today;
         
         int total = prefs.getInt(totalKey, 0) + 1;
         int attended = prefs.getInt(attendedKey, 0);
@@ -100,9 +145,18 @@ public class SubjectActivity extends AppCompatActivity {
             .putInt(attendedKey, attended)
             .apply();
         
+        // Update daily counters
+        if (isExtraClass) {
+            int extraCount = prefs.getInt(extraDailyKey, 0) + 1;
+            prefs.edit().putInt(extraDailyKey, extraCount).apply();
+        } else {
+            prefs.edit().putInt(dailyKey, 1).apply();
+        }
+        
         // Save attendance history with date and notes
         String currentDate = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date());
-        String attendanceEntry = currentDate + ":" + (isPresent ? "Present" : "Absent");
+        String type = isExtraClass ? "Extra Class" : "Regular";
+        String attendanceEntry = currentDate + ":" + (isPresent ? "Present" : "Absent") + " (" + type + ")";
         if (!notes.isEmpty()) {
             attendanceEntry += " - " + notes;
         }
@@ -113,6 +167,18 @@ public class SubjectActivity extends AppCompatActivity {
         prefs.edit().putString(historyKey, newHistory).apply();
         
         updateUI();
+    }
+
+    private void saveNotes(String notes) {
+        String notesKey = "notes_" + subject;
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date());
+        String noteEntry = currentDate + ": " + notes;
+        
+        String existingNotes = prefs.getString(notesKey, "");
+        String newNotes = existingNotes.isEmpty() ? noteEntry : existingNotes + "|" + noteEntry;
+        prefs.edit().putString(notesKey, newNotes).apply();
+        
+        Toast.makeText(this, "Note saved!", Toast.LENGTH_SHORT).show();
     }
 
     private void showAttendanceHistory() {

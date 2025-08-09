@@ -32,39 +32,44 @@
 
     <Button
         android:id="@+id/btnPresent"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/mark_present"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:minWidth="200dp"/>
 
     <Button
         android:id="@+id/btnAbsent"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/mark_absent"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:minWidth="200dp"/>
 
     <!-- New Extra Class Button -->
     <Button
         android:id="@+id/btnExtraClass"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/extra_class"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:minWidth="200dp"/>
 
     <Button
         android:id="@+id/btnViewHistory"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/view_history"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:minWidth="200dp"/>
 
     <Button
         android:id="@+id/btnViewNotes"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/view_notes"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:minWidth="200dp"/>
 
     <!-- Notes Button - Bottom Right -->
     <Button
@@ -74,8 +79,8 @@
         android:layout_gravity="end"
         android:layout_marginTop="16dp"
         android:text="@string/add_notes"
-        android:background="@drawable/button_background"
-        android:textColor="@android:color/black"
+        android:background="@drawable/button_background_dark"
+        android:textColor="@android:color/white"
         android:padding="8dp"/>
 
 </LinearLayout>

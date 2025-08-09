@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> subjectList;
     private Button btnExportData;
     private TextView tvStudentName;
+    private ImageView ivProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         subjectButtonContainer = findViewById(R.id.subjectButtonContainer);
         btnExportData = findViewById(R.id.btnExportData);
         tvStudentName = findViewById(R.id.tvStudentName);
+        ivProfile = findViewById(R.id.ivProfile);
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         subjectList = new ArrayList<>(prefs.getStringSet(KEY_SUBJECTS, new HashSet<String>()));
@@ -60,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnExportData.setOnClickListener(v -> exportAttendanceData());
+        
+        ivProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
         
         // Render subject cards after setting up everything
         renderSubjectCards();

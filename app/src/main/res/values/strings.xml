@@ -21,4 +21,6 @@
     <string name="export_data">Export Data</string>
     <string name="attendance_history">Attendance History</string>
     <string name="no_records_found">No attendance records found.</string>
+    <string name="extra_class">Extra Class</string>
+    <string name="subject_list">List of subjects</string>
 </resources>

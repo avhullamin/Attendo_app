@@ -49,14 +49,14 @@
         android:id="@+id/btnExtraClass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Extra Class"
+        android:text="@string/extra_class"
         android:layout_marginBottom="8dp"/>
 
     <Button
         android:id="@+id/btnViewHistory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="View History"
+        android:text="@string/view_history"
         android:layout_marginBottom="8dp"/>
 
 </LinearLayout>

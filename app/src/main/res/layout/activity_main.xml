@@ -9,7 +9,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/fabAddSubject">
+        android:layout_above="@id/fabAddSubject"
+        android:contentDescription="@string/subject_list">
 
         <LinearLayout
             android:id="@+id/subjectButtonContainer"
@@ -28,7 +29,9 @@
         android:layout_marginBottom="24dp"
         android:src="@android:drawable/ic_input_add"
         android:contentDescription="@string/add_subject"
-        app:fabSize="normal" />
+        app:fabSize="normal"
+        app:backgroundTint="@color/colorPrimary"
+        app:tint="@android:color/white" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,7 +48,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
-        android:text="Export Data"
+        android:text="@string/export_data"
         android:textSize="12sp"/>
 
 </RelativeLayout>

@@ -41,6 +41,22 @@
         android:id="@+id/btnAbsent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/mark_absent"/>
+        android:text="@string/mark_absent"
+        android:layout_marginBottom="8dp"/>
 
-</LinearLayout> 
+    <!-- New Extra Class Button -->
+    <Button
+        android:id="@+id/btnExtraClass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Extra Class"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/btnViewHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View History"
+        android:layout_marginBottom="8dp"/>
+
+</LinearLayout>

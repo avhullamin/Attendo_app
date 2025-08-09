@@ -17,4 +17,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="subject_deleted">Subject deleted</string>
+    <string name="view_history">View History</string>
+    <string name="export_data">Export Data</string>
+    <string name="attendance_history">Attendance History</string>
+    <string name="no_records_found">No attendance records found.</string>
 </resources>

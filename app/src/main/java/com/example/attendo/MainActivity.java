@@ -16,6 +16,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.widget.Toast;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "AttendancePrefs";
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout subjectButtonContainer;
     private SharedPreferences prefs;
     private ArrayList<String> subjectList;
+    private Button btnExportData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         fabAddSubject = findViewById(R.id.fabAddSubject);
         subjectButtonContainer = findViewById(R.id.subjectButtonContainer);
+        btnExportData = findViewById(R.id.btnExportData);
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         subjectList = new ArrayList<>(prefs.getStringSet(KEY_SUBJECTS, new HashSet<String>()));
@@ -46,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
                 showAddSubjectDialog();
             }
         });
+
+        btnExportData.setOnClickListener(v -> exportAttendanceData());
     }
 
     private void renderSubjectButtons() {
@@ -53,19 +60,19 @@ public class MainActivity extends AppCompatActivity {
         for (String subject : subjectList) {
             Button btn = new Button(this);
             btn.setText(subject);
-            
+
             // Click to open subject page
             btn.setOnClickListener(v -> {
                 Intent intent = SubjectActivity.newIntent(this, subject);
                 startActivity(intent);
             });
-            
+
             // Long press to delete subject
             btn.setOnLongClickListener(v -> {
                 showDeleteConfirmationDialog(subject);
                 return true;
             });
-            
+
             subjectButtonContainer.addView(btn);
         }
     }
@@ -107,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         subjectList.remove(subject);
         saveSubjects();
         renderSubjectButtons();
-        
+
         // Clear attendance data for this subject
         SharedPreferences.Editor editor = prefs.edit();
         editor.remove("total_" + subject);
@@ -117,5 +124,59 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveSubjects() {
         prefs.edit().putStringSet(KEY_SUBJECTS, new HashSet<>(subjectList)).apply();
+    }
+
+    private void exportAttendanceData() {
+        if (subjectList.isEmpty()) {
+            Toast.makeText(this, "No subjects to export.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        StringBuilder exportData = new StringBuilder();
+        exportData.append("ATTENDO - ATTENDANCE REPORT\n");
+        exportData.append("Generated on: ").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date())).append("\n\n");
+
+        for (String subject : subjectList) {
+            String totalKey = "total_" + subject;
+            String attendedKey = "attended_" + subject;
+            String historyKey = "history_" + subject;
+            
+            int total = prefs.getInt(totalKey, 0);
+            int attended = prefs.getInt(attendedKey, 0);
+            double percent = total == 0 ? 0 : (attended * 100.0 / total);
+            
+            exportData.append("SUBJECT: ").append(subject).append("\n");
+            exportData.append("Total Classes: ").append(total).append("\n");
+            exportData.append("Attended: ").append(attended).append("\n");
+            exportData.append("Missed: ").append(total - attended).append("\n");
+            exportData.append("Attendance: ").append(String.format(Locale.getDefault(), "%.2f%%", percent)).append("\n");
+            
+            // Add recent history
+            String history = prefs.getString(historyKey, "");
+            if (!history.isEmpty()) {
+                String[] entries = history.split("\\|");
+                exportData.append("Recent History:\n");
+                int count = 0;
+                for (int i = entries.length - 1; i >= 0 && count < 5; i--) {
+                    if (!entries[i].isEmpty()) {
+                        exportData.append("  ").append(entries[i]).append("\n");
+                        count++;
+                    }
+                }
+            }
+            exportData.append("\n");
+        }
+
+        new AlertDialog.Builder(this)
+            .setTitle("Export Data")
+            .setMessage(exportData.toString())
+            .setPositiveButton("Copy to Clipboard", (dialog, which) -> {
+                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                android.content.ClipData clip = android.content.ClipData.newPlainText("Attendance Data", exportData.toString());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(this, "Data copied to clipboard!", Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Close", null)
+            .show();
     }
 }

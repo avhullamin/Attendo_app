@@ -5,13 +5,20 @@
     android:layout_height="match_parent"
     android:padding="24dp">
 
-    <LinearLayout
-        android:id="@+id/subjectButtonContainer"
+    <!-- Subject buttons will be added here at the top -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_above="@+id/fabAddSubject"/>
+        android:layout_above="@id/fabAddSubject">
 
+        <LinearLayout
+            android:id="@+id/subjectButtonContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <!-- Floating button to add new subject -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddSubject"
         android:layout_width="wrap_content"
@@ -21,6 +28,24 @@
         android:layout_marginBottom="24dp"
         android:src="@android:drawable/ic_input_add"
         android:contentDescription="@string/add_subject"
-        app:fabSize="normal"/>
+        app:fabSize="normal" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:padding="12dp"
+        android:background="@drawable/subject_background">
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnExportData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:text="Export Data"
+        android:textSize="12sp"/>
 
 </RelativeLayout>

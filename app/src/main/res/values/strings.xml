@@ -26,4 +26,7 @@
     <string name="add_notes">Add Notes</string>
     <string name="edit_subject">Edit Subject</string>
     <string name="view_notes">View Notes</string>
+    <string name="hello_greeting">Hello,</string>
+    <string name="student_name">Student</string>
+    <string name="profile_icon">Profile</string>
 </resources>

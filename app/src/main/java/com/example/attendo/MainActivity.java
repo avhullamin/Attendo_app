@@ -47,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
 
         subjectList = new ArrayList<>(prefs.getStringSet(KEY_SUBJECTS, new HashSet<String>()));
         renderSubjectCards();
+        
+        // Set student name (you can customize this)
+        String studentName = prefs.getString("student_name", getString(R.string.student_name));
+        tvStudentName.setText(studentName);
 
         fabAddSubject.setOnClickListener(v -> {
             if (subjectList.size() >= MAX_SUBJECTS) {
